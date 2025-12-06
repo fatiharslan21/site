@@ -11,7 +11,7 @@ MUZIK_DOSYASI = "muzik.mp3"
 OZEL_NOT = """
 Biliyorum geçmişte yaşananları değiştiremem ama yerlerine en güzel anıları birlikte koyabileceğimizi biliyorum.
 Ben tıpkı ailenin yanında olduğun gibi yanında huzurlu ve rahat olacağın kişi, başını koyacağın bir omuz, sırtını yaslayacağın bir duvar olmaya hazırım.
-Ben zor olanı başarmaya, seninle en güzel hikayeyi yazmaya talibim. Ben beş kırmızı ışığın yanacağı ve mükemmel bir yarışa başlayacağımız o anı iple çekiyorum.
+Ben zor olanı başarmaya, seninle en güzel hikayeyi yazmaya talibim. Beş kırmızı ışığın yanacağı ve mükemmel bir yarışa başlayacağımız o anı iple çekiyorum.
 Sadece elini uzatman yeterli. İyi ki varsın..
 """
 
@@ -91,7 +91,7 @@ st.markdown("""
 /* Yazı Stilleri */
 h1 {
     font-family: 'Dancing Script', cursive;
-    color: #c84b6c;
+    color: #D80027; /* <-- BURASI KIRMIZI OLDU */
     font-size: 2.2rem;
     margin-bottom: 15px;
     text-shadow: 2px 2px 0px rgba(255,255,255,0.5);
@@ -104,7 +104,7 @@ p {
     line-height: 1.6;
 }
 
-/* YAĞAN NESNELER (SÜREKLİ YAĞIŞ İÇİN AYARLANDI) */
+/* YAĞAN NESNELER (SÜREKLİ YAĞIŞ) */
 .falling-object {
     position: fixed;
     top: -10%;
@@ -134,17 +134,13 @@ footer {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# --- EFEKTLERİ OLUŞTURMA (GÜNCELLENDİ) ---
-# Negatif delay kullanarak animasyonun ortasından başlatıyoruz.
-# Böylece sayfa her yenilendiğinde çiçekler ekranın her yerinde oluyor.
+# --- EFEKTLERİ OLUŞTURMA ---
 objects_html = ""
-for i in range(25):  # Sayıyı 15'ten 25'e çıkardık, daha yoğun olsun
-    # Rastgele pozisyon ve gecikme değerleri
-    left_pos = random.randint(0, 95)  # Ekranın neresinden düşsün
-    duration = random.randint(10, 20)  # Ne kadar sürsün
-    delay = random.randint(-20, 0)  # Eksi değer! (Zaten düşüyor gibi başlasın)
+for i in range(25):
+    left_pos = random.randint(0, 95)
+    duration = random.randint(10, 20)
+    delay = random.randint(-20, 0)
 
-    # Çiçek veya kalp seçimi
     icon = "🌸" if i % 2 == 0 else "❤️"
     size = random.randint(15, 30)
     color = "#ffb7b2" if icon == "🌸" else "rgba(255, 0, 80, 0.4)"
@@ -182,7 +178,7 @@ except:
     pass
 
 # --- SAYFALAR ---
-st.write("")  # Boşluk
+st.write("")
 
 
 def create_centered_button(label, callback):
@@ -233,7 +229,7 @@ elif st.session_state.page == 3:
     <div class="glass-card">
         <h1>Yeni Bir Başlangıç?</h1>
         <p>{OZEL_NOT}</p>
-        <p style="font-size: 0.9rem; color: #c84b6c; margin-top:30px;">(Cevabını bekliyor olacağım...)</p>
+        <p style="font-size: 0.9rem; color: #D80027; margin-top:30px;">(Cevabını bekliyor olacağım...)</p>
     </div>
     """, unsafe_allow_html=True)
     create_centered_button("Başa Dön 🌹", restart)
