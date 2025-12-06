@@ -1,12 +1,40 @@
 import streamlit as st
 import base64
+import streamlit.components.v1 as components
 
 # --- AYARLAR ---
-st.set_page_config(page_title="Sana Özel", page_icon="❤️", layout="wide")
+st.set_page_config(page_title="Sana Özel", page_icon="❤️", layout="wide", initial_sidebar_state="collapsed")
+
+# --- STREAMLIT ARAYÜZÜNÜ GİZLEME VE TAM EKRAN AYARLARI ---
+st.markdown("""
+    <style>
+        /* Üst barı ve menüyü gizle */
+        header {visibility: hidden;}
+        [data-testid="stHeader"] {display: none;}
+
+        /* Alt bilgiyi (footer) gizle */
+        footer {visibility: hidden;}
+
+        /* Sayfa içeriğini genişlet ve boşlukları sil */
+        .block-container {
+            padding-top: 0rem !important;
+            padding-bottom: 0rem !important;
+            padding-left: 0rem !important;
+            padding-right: 0rem !important;
+            max-width: 100% !important;
+        }
+
+        /* iframe'in etrafındaki boşlukları kaldır */
+        iframe {
+            display: block; 
+            border: none;
+            width: 100%;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 
 # --- MÜZİK DOSYASINI OKUMA VE GÖMME ---
-# Bu kısım mp3 dosyasını koda çevirir, böylece HTML içinde sorunsuz çalışır.
 def get_audio_base64(file_path):
     try:
         with open(file_path, "rb") as f:
@@ -16,6 +44,7 @@ def get_audio_base64(file_path):
         return None
 
 
+# 'muzik.mp3' dosyasının 'app.py' ile aynı klasörde olduğundan emin ol
 muzik_b64 = get_audio_base64("muzik.mp3")
 muzik_html = ""
 if muzik_b64:
@@ -25,7 +54,7 @@ if muzik_b64:
     </audio>
     """
 
-# --- HTML/CSS/JS KODU ---
+# --- HTML/CSS/JS KODU (PRO VERSİYON) ---
 html_code = f"""
 <!DOCTYPE html>
 <html lang="tr">
@@ -40,8 +69,8 @@ html_code = f"""
         margin: 0;
         padding: 0;
         width: 100%;
-        height: 100vh; /* Ekranı tam kapla */
-        overflow: hidden; /* Kaydırma çubuklarını gizle */
+        height: 100vh;
+        overflow: hidden; /* Kaydırmayı engelle */
         font-family: 'Montserrat', sans-serif;
         background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
         background-size: 400% 400%;
@@ -54,7 +83,7 @@ html_code = f"""
         100% {{ background-position: 0% 50%; }}
     }}
 
-    /* ORTALAMA VE KART YAPISI */
+    /* KART YAPISI */
     .container {{
         position: absolute;
         top: 50%;
@@ -76,10 +105,9 @@ html_code = f"""
         transition: all 0.5s ease;
         opacity: 0;
         transform: scale(0.8);
-        display: none; /* Başlangıçta gizli */
+        display: none;
     }}
 
-    /* Aktif kart görünür olur */
     .card.active {{
         display: block;
         opacity: 1;
@@ -94,9 +122,10 @@ html_code = f"""
 
     h1 {{
         font-family: 'Dancing Script', cursive;
-        color: #D80027; /* İSTEDİĞİN KIRMIZI */
+        color: #D80027; 
         font-size: 2.5rem;
         margin-bottom: 20px;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
     }}
 
     p {{
@@ -106,7 +135,7 @@ html_code = f"""
         margin-bottom: 30px;
     }}
 
-    /* BUTON TASARIMI */
+    /* BUTON */
     .btn {{
         background: linear-gradient(45deg, #ff416c, #ff4b2b);
         border: none;
@@ -122,6 +151,7 @@ html_code = f"""
         font-family: 'Montserrat', sans-serif;
         font-weight: 600;
         box-shadow: 0 4px 15px rgba(255, 75, 43, 0.4);
+        outline: none;
     }}
 
     .btn:hover {{
@@ -129,19 +159,13 @@ html_code = f"""
         box-shadow: 0 6px 20px rgba(255, 75, 43, 0.6);
     }}
 
-    .btn:active {{
-        transform: translateY(1px);
-    }}
-
-    /* YAĞAN KALPLER/ÇİÇEKLER */
+    /* YAĞMUR EFEKTİ */
     .emoji {{
         position: fixed;
         top: -10vh;
-        font-size: 24px;
         z-index: 1;
         animation-name: fall;
         animation-timing-function: linear;
-        animation-iteration-count: infinite;
     }}
 
     @keyframes fall {{
@@ -162,7 +186,7 @@ html_code = f"""
         </div>
 
         <div id="slide2" class="card">
-            <h1>Seni Hissediyorum</h1>
+            <h1>Seni Anlıyorum</h1>
             <p>Geçmişin ağırlığını, omuzlarındaki o görünmez yükü görüyorum. Güvenmek senin için dik bir yokuş, biliyorum.<br><br>Korkmakta çok haklısın...</p>
             <button class="btn" onclick="nextSlide(2)">Ama...</button>
         </div>
@@ -175,97 +199,71 @@ html_code = f"""
 
         <div id="slide4" class="card">
             <h1>Yeni Bir Başlangıç?</h1>
-            <p>Biliyorum geçmişte yaşananları değiştiremem ama yerlerine en güzel anıları birlikte koyabileceğimizi biliyorum.
+            <p>Biliyorum geçmişte yaşananları değiştiremem ama yerlerine en güzel anıları birlikte koyabiliriz.
             <br><br>
-            Ben tıpkı ailenin yanında olduğun gibi yanında huzurlu ve rahat olacağın kişi, başını koyacağın bir omuz, sırtını yaslayacağın bir duvar olmaya hazırım.
+            Tıpkı ailenin yanında olduğun gibi yanında huzurlu ve rahat olacağın kişi, başını koyacağın bir omuz, sırtını yaslayacağın bir duvar olmaya hazırım.
             Ben zor olanı başarmaya, seninle en güzel hikayeyi yazmaya talibim.
             <br><br>
-            Beş kırmızı ışığın yanacağı ve mükemmel bir yarışa başlayacağımız o anı iple çekiyorum. Sadece elini uzatman yeterli. İyi ki varsın..</p>
-            <p style="font-size: 0.9rem; color: #D80027; margin-top:20px;">(Cevabını bekliyor olacağım...)</p>
+            Beş kırmızı ışığın söneceği ve mükemmel bir yarışa başlayacağımız o anı iple çekiyorum. Sadece elini uzatman yeterli. İyi ki varsın..</p>
+            <p style="font-size: 0.9rem; color: #D80027; margin-top:20px; font-weight:bold;">(Cevabını bekliyor olacağım...)</p>
             <button class="btn" onclick="location.reload()">Başa Dön 🌹</button>
         </div>
     </div>
 
     <script>
-        // MÜZİK KONTROLÜ
-        // Kullanıcı sayfayla etkileşime girdiği an (ilk tıklamada) müzik başlar.
-        // Tarayıcı politikaları gereği otomatik başlamaz.
+        // Müzik Başlatma (İlk etkileşimde)
         var music = document.getElementById("bg-music");
-
         function playMusic() {{
             if(music && music.paused) {{
-                music.play().catch(e => console.log("Müzik hatası:", e));
-                music.volume = 0.5; // Ses seviyesi
+                music.play().catch(e => console.log(e));
+                music.volume = 0.6;
             }}
         }}
 
-        // SLAYT GEÇİŞ FONKSİYONU
-        function nextSlide(currentSlideIndex) {{
-            playMusic(); // Her tıklandığında müziği tetiklemeyi dene
+        // Slayt Geçişi
+        function nextSlide(current) {{
+            playMusic();
+            document.getElementById('slide' + current).classList.remove('active');
 
-            // Mevcut slaytı gizle
-            document.getElementById('slide' + currentSlideIndex).classList.remove('active');
+            setTimeout(() => {{
+                document.getElementById('slide' + (current + 1)).classList.add('active');
+            }}, 300);
 
-            // Bir sonraki slaytı göster
-            var nextIndex = currentSlideIndex + 1;
-            var nextEl = document.getElementById('slide' + nextIndex);
-            if(nextEl) {{
-                // Biraz bekleme efekti (daha yumuşak geçiş için)
-                setTimeout(() => {{
-                    nextEl.classList.add('active');
-                }}, 300);
-            }}
-
-            // Son slayt ise konfetileri patlat
-            if(nextIndex === 4) {{
-                startConfetti();
-            }}
+            if (current === 3) startConfetti();
         }}
 
-        // YAĞMUR EFEKTİ (Kalp ve Çiçekler)
+        // Yağmur Efekti
         function createRain() {{
             const emojis = ['🌸', '❤️', '🌹', '✨'];
-            const container = document.body;
-
             setInterval(() => {{
                 const el = document.createElement('div');
                 el.classList.add('emoji');
                 el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
                 el.style.left = Math.random() * 100 + 'vw';
-                el.style.animationDuration = (Math.random() * 3 + 2) + 's'; // 2-5 saniye arası düşüş
-                el.style.opacity = Math.random();
+                el.style.animationDuration = (Math.random() * 3 + 2) + 's';
                 el.style.fontSize = (Math.random() * 20 + 20) + 'px';
-
-                container.appendChild(el);
-
-                // Bellek şişmesin diye düşenleri sil
-                setTimeout(() => {{
-                    el.remove();
-                }}, 5000);
-            }}, 200); // Her 200ms'de bir yeni nesne
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 5000);
+            }}, 200);
         }}
-
         createRain();
 
-        // BASİT KONFETİ EFEKTİ (Final İçin)
+        // Konfeti
         function startConfetti() {{
-             // Daha yoğun bir yağış başlat
              setInterval(() => {{
                 const el = document.createElement('div');
                 el.classList.add('emoji');
                 el.innerText = '🎉';
                 el.style.left = Math.random() * 100 + 'vw';
-                el.style.animationDuration = '2s';
-                container.appendChild(el);
-                setTimeout(() => el.remove(), 2000);
-            }}, 50);
+                el.style.animationDuration = '2.5s';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 2500);
+            }}, 100);
         }}
     </script>
 </body>
 </html>
 """
 
-# HTML'i Streamlit içinde tam ekran göster
-import streamlit.components.v1 as components
-
-components.html(html_code, height=800, scrolling=False)
+# Yüksekliği artırdık ki mobilde kaydırma çubuğu çıkmasın
+components.html(html_code, height=900, scrolling=False)
