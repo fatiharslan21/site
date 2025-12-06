@@ -1,14 +1,24 @@
 import streamlit as st
 import time
 
-# Sayfa Ayarları (Sekme ismi ve ikonu)
+# --- BURAYI SEN DOLDURACAKSIN ---
+# Tırnakların içine en son sayfada çıkacak o vurucu notunu yaz.
+OZEL_NOT = """ 
+Biliyorum geçmişte yaşananları değiştiremem ama yerlerine en güzel anıları birlikte koyabileceğimizi biliyorum.
+Ben her şeye yeniden başlamaya, en baştan, en güzel halimizle tanışmaya hazırım. En güzel halimiz olmasa da her halini de sevecek olmanın mutluluğu içindeyim.
+Ben tıpkı ailenin yanında olduğun gibi huzurlu ve rahat olacağın kişi, başını koyacağın bir omuz, sırtını yaslayacağın bir duvar olmaya hazırım.
+Her zaman burada olacağıma söz veriyorum. İyi ki varsın..
+"""
+
+# Sayfa Ayarları
 st.set_page_config(
-    page_title="Sadece Senin İçin...",
+    page_title="Sana Özel...",
     page_icon="🌹",
-    layout="centered"
+    layout="centered",
+    initial_sidebar_state="collapsed"
 )
 
-# --- CSS TASARIMI (SİHRİN OLDUĞU YER) ---
+# --- CSS VE TASARIM (MOBİL UYUMLU VE HIZLI) ---
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Montserrat:wght@300;400&display=swap');
@@ -18,95 +28,102 @@ st.markdown("""
     background: linear-gradient(135deg, #fff5f7 0%, #e3eeff 100%);
 }
 
-/* KART TASARIMI (Buzlu Cam Efekti) */
+/* KART TASARIMI (Buzlu Cam) */
 .glass-card {
-    background: rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(10px); /* Arkasını hafif buzlu gösterir */
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.70);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-radius: 20px;
-    padding: 50px 30px;
+    padding: 40px 20px; /* Mobilde kenar boşlukları azaldı */
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     text-align: center;
-    margin-top: 50px;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 600px; /* Geniş ekranlarda çok yayılmasın */
+    margin-left: auto;
+    margin-right: auto;
 
-    /* Animasyon Tanımları */
-    animation: dreamyFade 2.5s ease-out;
+    /* HIZLANDIRILMIŞ ANİMASYON (1.2 Saniye) */
+    animation: dreamyFade 1.2s ease-out;
 }
 
-/* GEÇİŞ ANİMASYONU (Rüya Efekti) */
+/* MOBİL İÇİN ÖZEL AYARLAR */
+@media only screen and (max-width: 600px) {
+    .glass-card {
+        padding: 30px 15px;
+        margin-top: 10px;
+    }
+    h1 {
+        font-size: 1.8rem !important; /* Mobilde başlık biraz daha küçülsün */
+    }
+    p {
+        font-size: 1rem !important;
+    }
+}
+
+/* GEÇİŞ ANİMASYONU */
 @keyframes dreamyFade {
-    0% { 
-        opacity: 0; 
-        transform: translateY(30px) scale(0.95);
-        filter: blur(10px); /* Başlangıçta bulanık */
-    }
-    100% { 
-        opacity: 1; 
-        transform: translateY(0) scale(1);
-        filter: blur(0px); /* Sonunda net */
-    }
+    0% { opacity: 0; transform: translateY(20px); filter: blur(5px); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0px); }
 }
 
-/* BAŞLIK AYARLARI (Küçültüldü ve Zarifleştirildi) */
+/* BAŞLIK */
 h1 {
     font-family: 'Dancing Script', cursive;
-    color: #b84b5c; /* Soluk Gül Rengi */
-    font-size: 2.2rem !important; /* Boyut küçültüldü */
-    margin-bottom: 25px;
+    color: #b84b5c;
+    font-size: 2.2rem;
+    margin-bottom: 20px;
     font-weight: normal;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
-/* DÜZ YAZI AYARLARI */
+/* YAZI */
 p {
     font-family: 'Montserrat', sans-serif;
     font-size: 1.1rem;
-    color: #5d5d5d;
-    line-height: 1.8;
-    margin-bottom: 30px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 25px;
 }
 
-/* BUTON TASARIMI (Daha Soft) */
+/* BUTON */
 .stButton>button {
     background-color: #b84b5c;
     color: white;
     border-radius: 50px;
-    padding: 12px 40px;
+    padding: 12px 35px;
     font-family: 'Montserrat', sans-serif;
     font-size: 1rem;
     border: none;
-    transition: all 0.4s ease;
     box-shadow: 0 4px 15px rgba(184, 75, 92, 0.2);
+    width: 100%; /* Mobilde butona basmak kolay olsun */
 }
-
 .stButton>button:hover {
     background-color: #8c3a4a;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(184, 75, 92, 0.4);
+    transform: scale(1.02);
 }
 
-/* SÜZÜLEN ÇİÇEKLER (Sakura) */
-.sakura {
-    position: fixed;
-    top: -10%;
-    z-index: -1; /* Yazının arkasında kalsın */
-    user-select: none;
-    animation-name: fall, shake;
-    animation-duration: 12s, 4s;
-    animation-timing-function: linear, ease-in-out;
-    animation-iteration-count: infinite, infinite;
-}
-@keyframes fall { 0% {top: -10%;} 100% {top: 100%;} }
-@keyframes shake { 0% {transform: translateX(0px) rotate(0deg);} 50% {transform: translateX(80px) rotate(20deg);} 100% {transform: translateX(0px) rotate(0deg);} }
+/* MÜZİK ÇALAR GİZLEME (Opsiyonel: Eğer oynatıcı çok çirkin durursa bunu açarız) */
+/* audio { width: 100%; margin-top: 20px; } */
 
 </style>
 """, unsafe_allow_html=True)
 
-# Çiçekleri Oluşturma
+# Çiçek Efekti (Z-index -1 ile yazının arkasında)
 flowers_html = "".join([f"""
-<div class="sakura" style="left: {i * 7}%; animation-delay: {i * 1.2}s; color: #ffcce0; font-size: {18 + (i % 10)}px;">❀</div>
+<div style="position: fixed; left: {i * 8}%; top: -10%; z-index: -1; 
+animation: fall {8 + i}s linear infinite; color: #ffcce0; font-size: {15 + (i % 10)}px;">❀</div>
+<style>@keyframes fall {{ 0% {{top: -10%; transform: rotate(0deg);}} 100% {{top: 100%; transform: rotate(360deg);}} }}</style>
 """ for i in range(12)])
 st.markdown(flowers_html, unsafe_allow_html=True)
+
+# --- MÜZİK ÇALAR ---
+# Eğer 'muzik.mp3' dosyası varsa çalışır, yoksa hata vermez, sessizce geçer.
+try:
+    st.audio("muzik.mp3", format="audio/mp3")
+except:
+    pass  # Müzik dosyası yoksa site bozulmasın
 
 # --- SAYFA MANTIĞI ---
 if 'page' not in st.session_state:
@@ -114,7 +131,7 @@ if 'page' not in st.session_state:
 
 
 def next_page():
-    time.sleep(0.2)  # Tıklama hissiyatı için minik bekleme
+    time.sleep(0.1)
     st.session_state.page += 1
 
 
@@ -122,27 +139,21 @@ def restart():
     st.session_state.page = 0
 
 
-# --- SAYFALAR VE İÇERİKLER ---
-
-# Sayfa içeriğini ortalamak için boşluk
+# Ortalamak için boşluk
 st.write("")
 
-# 1. GİRİŞ SAYFASI
+# 1. GİRİŞ
 if st.session_state.page == 0:
-    st.markdown("""
+    st.markdown(f"""
     <div class="glass-card">
-        <h1>Bir Hikaye Anlatabilir miyim?</h1>
+        <h1>Biraz Konuşabilir miyiz?</h1>
         <p>Sadece senin ve benim olduğum, acele etmemiz gerekmeyen bir hikaye...</p>
         <p>Hazır hissettiğinde başla.</p>
     </div>
     """, unsafe_allow_html=True)
+    st.button("Dinliyorum...", on_click=next_page)
 
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col2:
-        st.write("")
-        st.button("Dinliyorum...", on_click=next_page)
-
-# 2. EMPATİ SAYFASI
+# 2. EMPATİ
 elif st.session_state.page == 1:
     st.markdown("""
     <div class="glass-card">
@@ -152,45 +163,28 @@ elif st.session_state.page == 1:
         <p>Bu çok insani, çok haklı bir his...</p>
     </div>
     """, unsafe_allow_html=True)
+    st.button("Devam et...", on_click=next_page)
 
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col2:
-        st.write("")
-        st.button("Devam et...", on_click=next_page)
-
-# 3. GÜVEN SAYFASI
+# 3. GÜVEN
 elif st.session_state.page == 2:
     st.markdown("""
     <div class="glass-card">
         <h1>Ama Ben Farklı Bir Yerdeyim</h1>
         <p>Ben senin savaşacağın bir cephe değilim.<br>
         Ben, yorulduğunda dinlenebileceğin gölgenim.</p>
-        <p>Acelemiz yok. Sen ne zaman "gel" dersen, ben o zaman bir adım atarım.<br>
-        Senden tek isteğim, bana o kapıyı aralık bırakman.</p>
+        <p>Acelemiz yok. Sen ne zaman "gel" dersen, ben o zaman bir adım atarım.</p>
     </div>
     """, unsafe_allow_html=True)
+    st.button("Son söz...", on_click=next_page)
 
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col2:
-        st.write("")
-        st.button("Son söz...", on_click=next_page)
-
-# 4. FİNAL SAYFASI
+# 4. FİNAL (ÖZEL NOTUN BURADA ÇIKACAK)
 elif st.session_state.page == 3:
-    # Finalde konfetiler patlasın
     st.balloons()
-
-    st.markdown("""
+    st.markdown(f"""
     <div class="glass-card">
-        <h1>Güzel Olabiliriz...</h1>
-        <p>Geçmişin gölgesi, geleceğin ışığını kapatmasın.</p>
-        <p>Benimle bu yolda, korkmadan, yavaş yavaş yürümeye var mısın?<br>
-        Söz veriyorum, o kalbi el üstünde tutacağım.</p>
-        <p style="font-size: 0.9rem; color: #b84b5c;">(Cevabını bana yazarsın...)</p>
+        <h1>Biz Çok Güzel Olabiliriz...</h1>
+        <p>{OZEL_NOT}</p>
+        <p style="font-size: 0.9rem; color: #b84b5c; margin-top:30px;">(Kalbimi buraya bıraktım...)</p>
     </div>
     """, unsafe_allow_html=True)
-
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col2:
-        st.write("")
-        st.button("En Başa Dön 🌹", on_click=restart)
+    st.button("En Başa Dön 🌹", on_click=restart)
