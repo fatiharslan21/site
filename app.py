@@ -5,127 +5,175 @@ import time
 st.set_page_config(
     page_title="Sadece Senin İçin",
     page_icon="🌸",
-    layout="centered",
-    initial_sidebar_state="collapsed"
+    layout="centered"
 )
 
-# --- CSS TASARIMI (Görsel Büyü ve Çiçekler) ---
-# Burası sitenin kalbi. Arka planı, fontları ve o süzülen çiçekleri burada ayarlıyoruz.
-page_bg_img = """
+# --- CSS VE ANİMASYONLAR ---
+# Burası sitenin makyajı. Yazıların yavaşça gelmesini ve şık durmasını sağlıyor.
+st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@300;500&display=swap');
 
-/* Arka Plan Gradyanı */
+/* Genel Arka Plan */
 .stApp {
-    background: linear-gradient(to bottom right, #fff0f5, #e6e6fa);
-    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    background-image: url("https://www.transparenttextures.com/patterns/cubes.png"); /* Hafif doku */
+}
+
+/* Yazıların bulunduğu kutu tasarımı */
+.card-container {
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    text-align: center;
+    border: 1px solid #ffe6e6;
+    animation: fadeIn 2s;
+}
+
+/* Fade In Animasyonu (Yavaşça belirme) */
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
 /* Başlık Fontu */
 h1 {
-    font-family: 'Great Vibes', cursive;
-    color: #d63384;
-    text-align: center;
-    font-size: 3.5rem !important;
-    text-shadow: 2px 2px 4px #00000020;
+    font-family: 'Dancing Script', cursive;
+    color: #c06c84;
+    font-size: 3rem !important;
+    margin-bottom: 20px;
 }
 
-/* Düz Yazı Stili */
+/* Normal Yazı Fontu */
 p {
-    color: #4a4a4a;
-    font-size: 1.2rem;
-    line-height: 1.6;
-    text-align: justify;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.4rem;
+    color: #555;
+    line-height: 1.8;
 }
 
-/* --- ÇİÇEK ANİMASYONU --- */
+/* Buton Tasarımı */
+.stButton>button {
+    background-color: #c06c84;
+    color: white;
+    border-radius: 30px;
+    padding: 10px 30px;
+    border: none;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(192, 108, 132, 0.3);
+}
+
+.stButton>button:hover {
+    background-color: #6c5b7b;
+    transform: scale(1.05);
+}
+
+/* Çiçekler */
 .sakura {
     position: fixed;
     top: -10%;
-    z-index: 9999;
+    z-index: 0;
     user-select: none;
-    cursor: default;
     animation-name: fall, shake;
-    animation-duration: 10s, 3s;
+    animation-duration: 12s, 4s;
     animation-timing-function: linear, ease-in-out;
     animation-iteration-count: infinite, infinite;
-    animation-play-state: running, running;
 }
+@keyframes fall { 0% {top: -10%;} 100% {top: 100%;} }
+@keyframes shake { 0% {transform: translateX(0px) rotate(0deg);} 50% {transform: translateX(80px) rotate(20deg);} 100% {transform: translateX(0px) rotate(0deg);} }
 
-@keyframes fall {
-    0% {top: -10%;}
-    100% {top: 100%;}
-}
-
-@keyframes shake {
-    0% {transform: translateX(0px) rotate(0deg);}
-    50% {transform: translateX(80px) rotate(20deg);}
-    100% {transform: translateX(0px) rotate(0deg);}
-}
-
-/* Çiçek Yaprağı Görünümü */
-.petal {
-    color: #ffb7b2;
-    font-size: 20px;
-}
 </style>
-"""
+""", unsafe_allow_html=True)
 
-# Çiçekleri ekrana rastgele dağıtan HTML bloğu
+# Çiçek Efekti (Arka planda süzülenler)
 flowers_html = "".join([f"""
-<div class="sakura petal" style="left: {i * 5}%; animation-delay: {i * 0.5}s; font-size: {15 + (i % 10)}px;">🌸</div>
-<div class="sakura petal" style="left: {(i * 5) + 2}%; animation-delay: {(i * 0.5) + 2}s; font-size: {10 + (i % 5)}px;">❀</div>
-""" for i in range(20)])
+<div class="sakura" style="left: {i * 5}%; animation-delay: {i * 0.8}s; color: #ffb7b2; font-size: {20 + (i % 10)}px;">❀</div>
+""" for i in range(15)])
+st.markdown(flowers_html, unsafe_allow_html=True)
 
-st.markdown(page_bg_img + flowers_html, unsafe_allow_html=True)
+# --- SAYFA GEÇİŞ MANTIĞI ---
+if 'page' not in st.session_state:
+    st.session_state.page = 0
 
-# --- İÇERİK KISMI ---
 
-# 1. Giriş: Yumuşak bir karşılama
-st.title("Biraz Durup Dinlenmen İçin...")
-st.markdown("---")
+def next_page():
+    st.session_state.page += 1
 
-col1, col2, col3 = st.columns([1, 2, 1])
-with col2:
-    # Buraya onunla veya seninle ilgili güzel, soft bir fotoğraf koyabilirsin.
-    # st.image("senin_resmin.jpg", caption="Huzur...")
-    pass
 
+def restart():
+    st.session_state.page = 0
+
+
+# --- İÇERİK AKIŞI ---
+
+# Boşluk bırakalım ki ortalı dursun
 st.write("")
 st.write("")
 
-# 2. Empati Bölümü: Onu anladığını hissettir
-st.markdown("""
-Biliyorum, bazen güvenmek uçurumun kenarında yürümek gibi geliyor. 
-Geçmişin gölgesi üzerine düştüğünde, kendini korumak için duvarlar örmen çok doğal. 
-Sana kızmıyorum, aksine seni anlıyorum. O duvarlar seni üzülmekten koruyor sanıyorsun...
-""")
-
-st.write("")
-
-# 3. Güven Mesajı: "Ben Farklıyım" değil, "Ben Buradayım"
-with st.expander("💌 İçimden geçenleri okumak ister misin?", expanded=False):
+# 1. SAHNE: Giriş
+if st.session_state.page == 0:
     st.markdown("""
-    Ben senin geçmişindeki fırtınalar değilim. Ben o fırtınalar dindiğinde sığınabileceğin, 
-    sakin bir liman olmak istiyorum sadece.
+    <div class="card-container">
+        <h1>Biraz Konuşabilir miyiz?</h1>
+        <p>Sana söylemek istediklerim var. Ama aceleyle değil, yavaş yavaş...</p>
+        <p>Sadece kalbini dinlemeye hazırsan, butona bas.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    Korkularını yok saymanı beklemiyorum. Sadece şunu bilmeni istiyorum:
-    **Benim yanımda gardını düşürdüğünde sırtından vurulmazsın, sadece sarılıp sarmalanırsın.**
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        st.write("")
+        st.button("Dinliyorum...", on_click=next_page)
 
-    Acelemiz yok. Zamanla, yavaş yavaş... Çiçeklerin acele etmeden açtığı gibi.
-    """)
+# 2. SAHNE: Empati (Geçmiş)
+elif st.session_state.page == 1:
+    st.markdown("""
+    <div class="card-container">
+        <h1>Seni Anlıyorum...</h1>
+        <p>Geçmişin bıraktığı izleri görebiliyorum. Güvenmenin senin için ne kadar zor olduğunu, 
+        tekrar üzülmekten ne kadar korktuğunu biliyorum.</p>
+        <p>Haklısın. İnsan kendini korumalı...</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-st.write("")
-st.write("")
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        st.write("")
+        st.button("Devam et...", on_click=next_page)
 
-# 4. İnteraktif Kapanış: Vurucu Nokta
-st.info("Eğer bir gün o duvarların arkasından bakmak istersen, ben tam olarak burada olacağım.")
+# 3. SAHNE: Güven ve Farklılık
+elif st.session_state.page == 2:
+    st.markdown("""
+    <div class="card-container">
+        <h1>Ama Ben Onlar Değilim</h1>
+        <p>Ben senin duvarlarını yıkmak için savaşmaya gelmedim. 
+        Ben sadece o duvarların kapısında, sen hazır olana kadar beklemeye geldim.</p>
+        <p>Benim yanımda gardını indirdiğinde karşılaşacağın tek şey şefkat olur.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-if st.button("🌹 Benimle Bir Şans Denemeye Ne Dersin?"):
-    st.balloons()  # Ekrana balonlar/çiçekler uçar
-    st.success("Bu yolculukta yalnız yürümeyeceğine söz veriyorum. Teşekkür ederim...")
-    # Burada isteğe bağlı olarak bir müzik başlatabilirsin
-    # st.audio("sizin_sarkiniz.mp3", format="audio/mp3", start_time=0)
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        st.write("")
+        st.button("Peki ya sonra?", on_click=next_page)
 
-else:
-    st.write("*(Cevabın ne olursa olsun, değerin bende hep aynı kalacak...)*")
+# 4. SAHNE: Final (Teklif)
+elif st.session_state.page == 3:
+    st.balloons()
+    st.markdown("""
+    <div class="card-container">
+        <h1>Biz Çok Güzel Olabiliriz</h1>
+        <p>Biliyorum korkuyorsun, ama korkularımız mutluluğumuzun önüne geçmesin.</p>
+        <p>Bana güvenmen için sana zaman, sabır ve sonsuz bir anlayış vadediyorum.</p>
+        <p><b>Benimle bu yolda, yavaşça yürümeye var mısın?</b></p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        st.write("")
+        # Buraya tıklandığında başa döner, istersen buraya WhatsApp linki koyabilirsin.
+        st.button("Başa Dön 🌹", on_click=restart)
