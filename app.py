@@ -1,8 +1,9 @@
+
 import streamlit as st
 import time
 
 # --- SENİN YAZACAĞIN KISIM ---
-OZEL_NOT = """Biliyorum geçmişte yaşananları değiştiremem ama yerlerine en güzel anıları birlikte koyabileceğimizi biliyorum.
+OZEL_NOT = """ Biliyorum geçmişte yaşananları değiştiremem ama yerlerine en güzel anıları birlikte koyabileceğimizi biliyorum.
 Ben tıpkı ailenin yanında olduğun gibi yanında huzurlu ve rahat olacağın kişi, başını koyacağın bir omuz, sırtını yaslayacağın bir duvar olmaya hazırım.
 Ben zor olanı başarmaya, seninle en güzel hikayeyi yazmaya talibim.
 Sadece elini uzatman yeterli.İyi ki varsın..
@@ -34,7 +35,7 @@ st.markdown("""
     100% {background-position: 0% 50%;}
 }
 
-/* KART TASARIMI (Daha Canlı) */
+/* KART TASARIMI */
 .glass-card {
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(15px);
@@ -44,7 +45,7 @@ st.markdown("""
     border: 1px solid rgba(255, 255, 255, 0.6);
     text-align: center;
     margin-top: 30px;
-    margin-bottom: 30px;
+    margin-bottom: 20px; /* Butonla arasındaki boşluk */
     animation: slideUp 1s ease-out;
 }
 
@@ -53,26 +54,20 @@ st.markdown("""
     100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* BUTON ORTALAMA VE KALP ATIŞI ANİMASYONU */
-.stButton {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
+/* BUTON TASARIMI */
+/* Butonun rengi ve şekli burada ayarlanır, konumu aşağıda Python ile ayarlanacak */
 .stButton>button {
     background: linear-gradient(45deg, #d63384, #ff6b6b);
     color: white;
     border-radius: 50px;
-    padding: 15px 50px;
+    padding: 15px 0px; /* İç boşluk */
+    width: 100%;       /* Bulunduğu kolonun tamamını kaplasın */
     font-family: 'Montserrat', sans-serif;
     font-size: 1.1rem;
     font-weight: 500;
     border: none;
     box-shadow: 0 5px 15px rgba(214, 51, 132, 0.4);
     transition: all 0.3s ease;
-
-    /* Kalp Atışı Efekti */
     animation: pulse 2s infinite;
 }
 
@@ -85,25 +80,7 @@ st.markdown("""
 .stButton>button:hover {
     background: linear-gradient(45deg, #ff6b6b, #d63384);
     transform: translateY(-2px);
-    animation: none; /* Üzerine gelince dursun */
-}
-
-/* MÜZİK ÇALARI GİZLEME VE SADELEŞTİRME */
-/* Bu CSS Chrome/Safari'de süre çubuğunu gizler, sadece Play kalır */
-audio::-webkit-media-controls-timeline,
-audio::-webkit-media-controls-current-time-display,
-audio::-webkit-media-controls-time-remaining-display,
-audio::-webkit-media-controls-volume-slider,
-audio::-webkit-media-controls-mute-button {
-    display: none !important;
-}
-
-audio {
-    width: 250px; /* Daha küçük */
-    height: 40px;
-    border-radius: 30px;
-    margin-bottom: 20px;
-    opacity: 0.8;
+    animation: none;
 }
 
 /* Yazı Stilleri */
@@ -140,29 +117,13 @@ p {
 """, unsafe_allow_html=True)
 
 # --- EFEKTLERİ OLUŞTURMA ---
-# Hem Çiçek (🌸) Hem Kalp (❤️) Yağsın
 objects_html = ""
 for i in range(15):
-    # Çiçekler
     objects_html += f"""
     <div class="falling-object" style="left: {i * 7}%; animation-duration: {10 + i}s, {3 + (i % 3)}s; animation-delay: {i * 0.5}s; font-size: {20 + (i % 10)}px; color: #ffb7b2;">🌸</div>
-    """
-    # Kalpler (Daha şeffaf)
-    objects_html += f"""
     <div class="falling-object" style="left: {(i * 7) + 3}%; animation-duration: {12 + i}s, {4 + (i % 3)}s; animation-delay: {i * 0.8}s; font-size: {15 + (i % 5)}px; color: rgba(255, 0, 80, 0.4);">❤️</div>
     """
 st.markdown(objects_html, unsafe_allow_html=True)
-
-# --- MÜZİK (EN ÜSTTE VE SADE) ---
-# Müzik çalar artık süre barı olmadan görünecek (Chrome/Safari tabanlı tarayıcılarda)
-col_m1, col_m2, col_m3 = st.columns([1, 2, 1])
-with col_m2:
-    try:
-        # Not: Streamlit'te müzik bazen sayfa yenilenince durabilir.
-        # Bu en kararlı yöntemdir.
-        st.audio("muzik.mp3", format="audio/mp3")
-    except:
-        pass
 
 # --- SAYFA MANTIĞI ---
 if 'page' not in st.session_state:
@@ -180,6 +141,9 @@ def restart():
 
 # --- SAYFALAR ---
 
+# Sayfa ortalaması için boşluk
+st.write("")
+
 # 1. GİRİŞ
 if st.session_state.page == 0:
     st.markdown("""
@@ -189,7 +153,12 @@ if st.session_state.page == 0:
         <p>Sadece kalbini dinlemeye hazırsan...</p>
     </div>
     """, unsafe_allow_html=True)
-    st.button("Başla ❤️", on_click=next_page)
+
+    # BUTONU ORTALAMAK İÇİN KOLON SİSTEMİ
+    # [1, 1, 1] demek ekranı 3'e böl, ortadakini (col2) kullan demektir.
+    col1, col2, col3 = st.columns([1, 1.5, 1])
+    with col2:
+        st.button("Başla ❤️", on_click=next_page)
 
 # 2. GEÇMİŞ
 elif st.session_state.page == 1:
@@ -201,7 +170,10 @@ elif st.session_state.page == 1:
         <p>Korkmakta çok haklısın...</p>
     </div>
     """, unsafe_allow_html=True)
-    st.button("Ama...", on_click=next_page)
+
+    col1, col2, col3 = st.columns([1, 1.5, 1])
+    with col2:
+        st.button("Ama...", on_click=next_page)
 
 # 3. GÜVEN
 elif st.session_state.page == 2:
@@ -213,11 +185,14 @@ elif st.session_state.page == 2:
         <p>Acelemiz yok. Sen "hazırım" diyene kadar buradayım.</p>
     </div>
     """, unsafe_allow_html=True)
-    st.button("Ve Son Olarak...", on_click=next_page)
+
+    col1, col2, col3 = st.columns([1, 1.5, 1])
+    with col2:
+        st.button("Ve Son Olarak...", on_click=next_page)
 
 # 4. FİNAL
 elif st.session_state.page == 3:
-    st.balloons()  # Balonlar patlasın
+    st.balloons()
     st.markdown(f"""
     <div class="glass-card">
         <h1>Yeni Bir Başlangıç?</h1>
@@ -225,4 +200,7 @@ elif st.session_state.page == 3:
         <p style="font-size: 0.9rem; color: #c84b6c; margin-top:30px;">(Cevabını bekliyor olacağım...)</p>
     </div>
     """, unsafe_allow_html=True)
-    st.button("Başa Dön 🌹", on_click=restart)
+
+    col1, col2, col3 = st.columns([1, 1.5, 1])
+    with col2:
+        st.button("Başa Dön 🌹", on_click=restart)
