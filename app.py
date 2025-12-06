@@ -199,7 +199,7 @@ html_code = f"""
 
         <div id="slide4" class="card">
             <h1>Yeni Bir Başlangıç?</h1>
-            <p>Biliyorum geçmişte yaşananları değiştiremem ama yerlerine en güzel anıları birlikte koyabiliriz.
+            <p>Canım Selenay, Biliyorum geçmişte yaşananları değiştiremem ama yerlerine en güzel anıları birlikte koyabiliriz.
             <br><br>
             Tıpkı ailenin yanında olduğun gibi yanında huzurlu ve rahat olacağın kişi, başını koyacağın bir omuz, sırtını yaslayacağın bir duvar olmaya hazırım.
             Ben zor olanı başarmaya, seninle en güzel hikayeyi yazmaya talibim.
