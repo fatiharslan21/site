@@ -1,12 +1,17 @@
-
 import streamlit as st
 import time
 
-# --- SENİN YAZACAĞIN KISIM ---
-OZEL_NOT = """ Biliyorum geçmişte yaşananları değiştiremem ama yerlerine en güzel anıları birlikte koyabileceğimizi biliyorum.
+# --- MÜZİK AYARI ---
+# Buraya çalmasını istediğin müziğin dosya adını yaz.
+# Müziği 'app.py' ile AYNI KLASÖRE 'muzik.mp3' adıyla yüklemelisin.
+MUZIK_DOSYASI = "muzik.mp3"
+
+# --- SENİN ÖZEL NOTUN ---
+OZEL_NOT = """
+Biliyorum geçmişte yaşananları değiştiremem ama yerlerine en güzel anıları birlikte koyabileceğimizi biliyorum.
 Ben tıpkı ailenin yanında olduğun gibi yanında huzurlu ve rahat olacağın kişi, başını koyacağın bir omuz, sırtını yaslayacağın bir duvar olmaya hazırım.
-Ben zor olanı başarmaya, seninle en güzel hikayeyi yazmaya talibim.
-Sadece elini uzatman yeterli.İyi ki varsın..
+Ben zor olanı başarmaya, seninle en güzel hikayeyi yazmaya talibim. Ben beş kırmızı ışığın yanacağı ve mükemmel bir yarışa başlayacağımız o anı iple çekiyorum.
+Sadece elini uzatman yeterli. İyi ki varsın..
 """
 
 # Sayfa Ayarları
@@ -37,15 +42,15 @@ st.markdown("""
 
 /* KART TASARIMI */
 .glass-card {
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.90);
     backdrop-filter: blur(15px);
     border-radius: 25px;
-    padding: 40px 20px;
+    padding: 30px 20px;
     box-shadow: 0 10px 40px rgba(255, 105, 180, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.6);
     text-align: center;
-    margin-top: 30px;
-    margin-bottom: 20px; /* Butonla arasındaki boşluk */
+    margin-top: 20px;
+    margin-bottom: 30px;
     animation: slideUp 1s ease-out;
 }
 
@@ -55,15 +60,14 @@ st.markdown("""
 }
 
 /* BUTON TASARIMI */
-/* Butonun rengi ve şekli burada ayarlanır, konumu aşağıda Python ile ayarlanacak */
 .stButton>button {
     background: linear-gradient(45deg, #d63384, #ff6b6b);
     color: white;
     border-radius: 50px;
-    padding: 15px 0px; /* İç boşluk */
-    width: 100%;       /* Bulunduğu kolonun tamamını kaplasın */
+    padding: 12px 0px;
+    width: 100%;
     font-family: 'Montserrat', sans-serif;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 500;
     border: none;
     box-shadow: 0 5px 15px rgba(214, 51, 132, 0.4);
@@ -87,23 +91,23 @@ st.markdown("""
 h1 {
     font-family: 'Dancing Script', cursive;
     color: #c84b6c;
-    font-size: 2.5rem;
-    margin-bottom: 20px;
+    font-size: 2.2rem; /* Mobilde taşmasın diye biraz küçültüldü */
+    margin-bottom: 15px;
     text-shadow: 2px 2px 0px rgba(255,255,255,0.5);
 }
 
 p {
     font-family: 'Montserrat', sans-serif;
-    font-size: 1.2rem;
-    color: #666;
+    font-size: 1.1rem;
+    color: #555;
     line-height: 1.6;
 }
 
-/* YAĞAN NESNELER (Kalp ve Çiçek) */
+/* YAĞAN NESNELER (Z-Index -1 yapıldı ki butona basılabilsin) */
 .falling-object {
     position: fixed;
     top: -10%;
-    z-index: 0;
+    z-index: -1; 
     user-select: none;
     animation-name: fall, sway;
     animation-timing-function: linear, ease-in-out;
@@ -113,6 +117,11 @@ p {
 @keyframes fall { 0% {top: -10%; opacity: 1;} 100% {top: 105%; opacity: 0.2;} }
 @keyframes sway { 0% {transform: translateX(0px) rotate(0deg);} 50% {transform: translateX(50px) rotate(180deg);} 100% {transform: translateX(0px) rotate(360deg);} }
 
+/* Streamlit Arayüzünü Temizleme */
+#MainMenu {visibility: hidden;}
+header {visibility: hidden;}
+footer {visibility: hidden;}
+.stDeployButton {display:none;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -129,20 +138,28 @@ st.markdown(objects_html, unsafe_allow_html=True)
 if 'page' not in st.session_state:
     st.session_state.page = 0
 
-
 def next_page():
     time.sleep(0.1)
     st.session_state.page += 1
 
-
 def restart():
     st.session_state.page = 0
 
+# --- MÜZİK OYNATICI ---
+# Tarayıcılar otomatik oynatmayı engellediği için küçük bir player görünür.
+try:
+    st.audio(MUZIK_DOSYASI, format='audio/mp3', start_time=0)
+except:
+    pass # Dosya yoksa hata vermesin
 
 # --- SAYFALAR ---
+st.write("") # Boşluk
 
-# Sayfa ortalaması için boşluk
-st.write("")
+# Ortalamak için kolon yapısı (Mobilde buton büyük gözüksün diye oranlar değişti)
+def create_centered_button(label, callback):
+    col1, col2, col3 = st.columns([0.1, 0.8, 0.1])
+    with col2:
+        st.button(label, on_click=callback, use_container_width=True)
 
 # 1. GİRİŞ
 if st.session_state.page == 0:
@@ -153,12 +170,7 @@ if st.session_state.page == 0:
         <p>Sadece kalbini dinlemeye hazırsan...</p>
     </div>
     """, unsafe_allow_html=True)
-
-    # BUTONU ORTALAMAK İÇİN KOLON SİSTEMİ
-    # [1, 1, 1] demek ekranı 3'e böl, ortadakini (col2) kullan demektir.
-    col1, col2, col3 = st.columns([1, 1.5, 1])
-    with col2:
-        st.button("Başla ❤️", on_click=next_page)
+    create_centered_button("Başla ❤️", next_page)
 
 # 2. GEÇMİŞ
 elif st.session_state.page == 1:
@@ -170,10 +182,7 @@ elif st.session_state.page == 1:
         <p>Korkmakta çok haklısın...</p>
     </div>
     """, unsafe_allow_html=True)
-
-    col1, col2, col3 = st.columns([1, 1.5, 1])
-    with col2:
-        st.button("Ama...", on_click=next_page)
+    create_centered_button("Ama...", next_page)
 
 # 3. GÜVEN
 elif st.session_state.page == 2:
@@ -185,10 +194,7 @@ elif st.session_state.page == 2:
         <p>Acelemiz yok. Sen "hazırım" diyene kadar buradayım.</p>
     </div>
     """, unsafe_allow_html=True)
-
-    col1, col2, col3 = st.columns([1, 1.5, 1])
-    with col2:
-        st.button("Ve Son Olarak...", on_click=next_page)
+    create_centered_button("Ve Son Olarak...", next_page)
 
 # 4. FİNAL
 elif st.session_state.page == 3:
@@ -200,7 +206,4 @@ elif st.session_state.page == 3:
         <p style="font-size: 0.9rem; color: #c84b6c; margin-top:30px;">(Cevabını bekliyor olacağım...)</p>
     </div>
     """, unsafe_allow_html=True)
-
-    col1, col2, col3 = st.columns([1, 1.5, 1])
-    with col2:
-        st.button("Başa Dön 🌹", on_click=restart)
+    create_centered_button("Başa Dön 🌹", restart)
