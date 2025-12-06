@@ -1,5 +1,6 @@
 import streamlit as st
 import time
+import random
 
 # --- MÜZİK AYARI ---
 # Buraya çalmasını istediğin müziğin dosya adını yaz.
@@ -91,7 +92,7 @@ st.markdown("""
 h1 {
     font-family: 'Dancing Script', cursive;
     color: #c84b6c;
-    font-size: 2.2rem; /* Mobilde taşmasın diye biraz küçültüldü */
+    font-size: 2.2rem;
     margin-bottom: 15px;
     text-shadow: 2px 2px 0px rgba(255,255,255,0.5);
 }
@@ -103,7 +104,7 @@ p {
     line-height: 1.6;
 }
 
-/* YAĞAN NESNELER (Z-Index -1 yapıldı ki butona basılabilsin) */
+/* YAĞAN NESNELER (SÜREKLİ YAĞIŞ İÇİN AYARLANDI) */
 .falling-object {
     position: fixed;
     top: -10%;
@@ -114,8 +115,16 @@ p {
     animation-iteration-count: infinite, infinite;
 }
 
-@keyframes fall { 0% {top: -10%; opacity: 1;} 100% {top: 105%; opacity: 0.2;} }
-@keyframes sway { 0% {transform: translateX(0px) rotate(0deg);} 50% {transform: translateX(50px) rotate(180deg);} 100% {transform: translateX(0px) rotate(360deg);} }
+@keyframes fall { 
+    0% {top: -10%; opacity: 1;} 
+    100% {top: 105%; opacity: 0.2;} 
+}
+
+@keyframes sway { 
+    0% {transform: translateX(0px) rotate(0deg);} 
+    50% {transform: translateX(50px) rotate(180deg);} 
+    100% {transform: translateX(0px) rotate(360deg);} 
+}
 
 /* Streamlit Arayüzünü Temizleme */
 #MainMenu {visibility: hidden;}
@@ -125,12 +134,30 @@ footer {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# --- EFEKTLERİ OLUŞTURMA ---
+# --- EFEKTLERİ OLUŞTURMA (GÜNCELLENDİ) ---
+# Negatif delay kullanarak animasyonun ortasından başlatıyoruz.
+# Böylece sayfa her yenilendiğinde çiçekler ekranın her yerinde oluyor.
 objects_html = ""
-for i in range(15):
+for i in range(25):  # Sayıyı 15'ten 25'e çıkardık, daha yoğun olsun
+    # Rastgele pozisyon ve gecikme değerleri
+    left_pos = random.randint(0, 95)  # Ekranın neresinden düşsün
+    duration = random.randint(10, 20)  # Ne kadar sürsün
+    delay = random.randint(-20, 0)  # Eksi değer! (Zaten düşüyor gibi başlasın)
+
+    # Çiçek veya kalp seçimi
+    icon = "🌸" if i % 2 == 0 else "❤️"
+    size = random.randint(15, 30)
+    color = "#ffb7b2" if icon == "🌸" else "rgba(255, 0, 80, 0.4)"
+
     objects_html += f"""
-    <div class="falling-object" style="left: {i * 7}%; animation-duration: {10 + i}s, {3 + (i % 3)}s; animation-delay: {i * 0.5}s; font-size: {20 + (i % 10)}px; color: #ffb7b2;">🌸</div>
-    <div class="falling-object" style="left: {(i * 7) + 3}%; animation-duration: {12 + i}s, {4 + (i % 3)}s; animation-delay: {i * 0.8}s; font-size: {15 + (i % 5)}px; color: rgba(255, 0, 80, 0.4);">❤️</div>
+    <div class="falling-object" style="
+        left: {left_pos}%; 
+        animation-duration: {duration}s, {random.randint(3, 7)}s; 
+        animation-delay: {delay}s, {delay}s; 
+        font-size: {size}px; 
+        color: {color};">
+        {icon}
+    </div>
     """
 st.markdown(objects_html, unsafe_allow_html=True)
 
@@ -138,28 +165,31 @@ st.markdown(objects_html, unsafe_allow_html=True)
 if 'page' not in st.session_state:
     st.session_state.page = 0
 
+
 def next_page():
     time.sleep(0.1)
     st.session_state.page += 1
 
+
 def restart():
     st.session_state.page = 0
 
+
 # --- MÜZİK OYNATICI ---
-# Tarayıcılar otomatik oynatmayı engellediği için küçük bir player görünür.
 try:
     st.audio(MUZIK_DOSYASI, format='audio/mp3', start_time=0)
 except:
-    pass # Dosya yoksa hata vermesin
+    pass
 
 # --- SAYFALAR ---
-st.write("") # Boşluk
+st.write("")  # Boşluk
 
-# Ortalamak için kolon yapısı (Mobilde buton büyük gözüksün diye oranlar değişti)
+
 def create_centered_button(label, callback):
     col1, col2, col3 = st.columns([0.1, 0.8, 0.1])
     with col2:
         st.button(label, on_click=callback, use_container_width=True)
+
 
 # 1. GİRİŞ
 if st.session_state.page == 0:
